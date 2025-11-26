@@ -1,0 +1,11 @@
+{
+  "name": "data-redundancy-system",
+  "version": "1.0.0",
+  "description": "Cloud Data Redundancy System with Vercel + Supabase",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0"
+  }
+}

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Redundancy System - Vercel + Supabase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #4285f4;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .cloud-badge {
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #4285f4;
+            border: 1px solid #e0e0e0;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+        
+        textarea:focus {
+            border-color: #4285f4;
+            outline: none;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            flex: 1;
+            background: #4285f4;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #3367d6;
+        }
+        
+        button.secondary {
+            background: #34a853;
+        }
+        
+        button.secondary:hover {
+            background: #2d9249;
+        }
+        
+        button.danger {
+            background: #ea4335;
+        }
+        
+        button.danger:hover {
+            background: #d33426;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .unique {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .duplicate {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .stats {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #666;
+            display: none;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .feature-list {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .feature-list h3 {
+            color: #4285f4;
+            margin-bottom: 10px;
+        }
+        
+        .feature-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            color: #555;
+        }
+        
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Data Redundancy System</h1>
+            <div class="cloud-badge">Netlify + Supabase Cloud Platform</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="contentInput">Enter your data to check for duplicates:</label>
+            <textarea 
+                id="contentInput" 
+                placeholder="Type or paste your content here... Example: 'Hello World', 'Project Data', 'Test Content'"
+            ></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button onclick="checkData()">Check & Store Data</button>
+            <button class="secondary" onclick="testSystem()">Test System</button>
+            <button class="danger" onclick="clearInput()">Clear</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            🔄 Checking for duplicates in cloud database...
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="stats" id="stats">
+            System initializing...
+        </div>
+        
+        <div class="feature-list">
+            <h3>🚀 System Features:</h3>
+            <ul>
+                <li>Real-time duplicate detection</li>
+                <li>Cloud database storage (Supabase PostgreSQL)</li>
+                <li>Serverless API (Netlify Functions)</li>
+                <li>Instant response with detailed feedback</li>
+                <li>Professional cloud architecture</li>
+                <li>100% Free tier - $0 monthly cost</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Updated function URL
+        const FUNCTION_URL = '/api/checkRedundancy';
+        
+        async function checkData() {
+            const content = document.getElementById('contentInput').value.trim();
+            const resultDiv = document.getElementById('result');
+            const loadingDiv = document.getElementById('loading');
+            
+            if (!content) {
+                showResult('error', '❌ Please enter some content to check for duplicates');
+                return;
+            }
+            
+            // Show loading, hide previous result
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch(FUNCTION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: content })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.duplicate) {
+                        showResult('duplicate', 
+                            `❌ DUPLICATE DATA FOUND!<br><br>
+                            <strong>Your input:</strong> "${data.content}"<br>
+                            <strong>Already exists in database as:</strong> "${data.existingContent}"<br>
+                            <strong>Document ID:</strong> ${data.existingId}<br>
+                            <strong>Originally stored:</strong> ${new Date(data.existingTimestamp).toLocaleString()}`
+                        );
+                    } else {
+                        showResult('unique',
+                            `✅ UNIQUE DATA STORED SUCCESSFULLY!<br><br>
+                            <strong>Content:</strong> "${data.content}"<br>
+                            <strong>Document ID:</strong> ${data.documentId}<br>
+                            <strong>Stored timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}<br>
+                            <strong>Status:</strong> ${data.status}`
+                        );
+                        // Clear input on success
+                        document.getElementById('contentInput').value = '';
+                    }
+                } else {
+                    showResult('error', 
+                        `🚨 ERROR: ${data.error}<br>
+                        ${data.details ? '<strong>Details:</strong> ' + data.details : ''}`
+                    );
+                }
+            } catch (error) {
+                showResult('error', 
+                    `🌐 NETWORK ERROR<br>
+                    Please check your connection and try again.<br>
+                    <strong>Error:</strong> ${error.message}<br><br>
+                    <em>Note: Make sure the Netlify function is deployed and environment variables are set.</em>`
+                );
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        async function testSystem() {
+            // Test with sample data
+            const testData = [
+                "Hello World - Test Data",
+                "Cloud Computing Project",
+                "Data Redundancy System Demo"
+            ];
+            
+            const randomTest = testData[Math.floor(Math.random() * testData.length)];
+            document.getElementById('contentInput').value = randomTest;
+            
+            showResult('info', 
+                `🧪 Test mode activated!<br><br>
+                <strong>Sample data loaded:</strong> "${randomTest}"<br>
+                Click "Check & Store Data" to test the system.`
+            );
+        }
+        
+        function clearInput() {
+            document.getElementById('contentInput').value = '';
+            document.getElementById('result').style.display = 'none';
+            showResult('info', 'Input cleared. Ready for new data.');
+        }
+        
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result ' + type;
+            resultDiv.innerHTML = message;
+            resultDiv.style.display = 'block';
+        }
+        
+        // Test the API connection on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(FUNCTION_URL);
+                const data = await response.json();
+                document.getElementById('stats').innerHTML = 
+                    `🟢 System Status: <strong>${data.status}</strong> | Cloud Provider: <strong>${data.provider}</strong> | Service: <strong>${data.service}</strong>`;
+            } catch (error) {
+                document.getElementById('stats').innerHTML = 
+                    `🔴 System Status: <strong>Offline</strong> - Deploy to Netlify to activate cloud functions<br>
+                    <em>Error: ${error.message}</em>`;
+            }
+        });
+
+        // Allow Enter key to submit (but not in textarea)
+        document.getElementById('contentInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                checkData();
+            }
+        });
+    </script>
+</body>
+</html>
